@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">LineUp2025</string>
+    <string name="line">Line</string>
+    <string name="up">Up</string>
+    <string name="register">Register</string>
+    <string name="login">Login</string>
+    <string name="register_now">Register now</string>
+    <string name="to_start_playing">to start playing</string>
+    <string name="name">Name</string>
+    <string name="email">Email</string>
+    <string name="zeal_id">Zeal ID</string>
+    <string name="password">Password</string>
+    <string name="log_in_to">Log in to</string>
+    <string name="your_account">your account</string>
+</resources>
