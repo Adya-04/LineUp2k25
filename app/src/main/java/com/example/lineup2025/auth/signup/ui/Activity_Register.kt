@@ -41,8 +41,12 @@ class Activity_Register : AppCompatActivity() {
         binding.regtbtn.setOnClickListener {
             registration()
         }
-        signUpViewModel.signUpResponse.observe(this, Observer { response ->
-            hideLoading()
+
+        setupObservers()
+    }
+
+    private fun setupObservers() {
+        signUpViewModel.signUpResponse.observe(this) { response ->
             if (response.isSuccessful) {
                 val responseBody = response.body()
                 responseBody?.let {
@@ -56,8 +60,12 @@ class Activity_Register : AppCompatActivity() {
             } else {
                 Toast.makeText(this, "Zeal Id is already registered", Toast.LENGTH_SHORT).show()
             }
-        })
+            signUpViewModel.loading.observe(this) { isLoading ->
+                if (isLoading) showLoading() else hideLoading()
+            }
+        }
     }
+
     private fun registration() {
         binding.regtbtn.isEnabled = false
         binding.regText.isEnabled = false

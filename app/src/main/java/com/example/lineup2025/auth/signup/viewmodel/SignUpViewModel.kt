@@ -18,14 +18,21 @@ class SignUpViewModel(private val repository: SignUpRepository) : ViewModel() {
     val signUpResponse: LiveData<Response<SignUpResponseBody>>
         get() = _signUpResponse
 
+    private val _loading = MutableLiveData<Boolean>()
+    val loading: LiveData<Boolean> get() = _loading
+
     fun signUp(email: String, password: String, name: String, zealId: String) {
         val requestBody = SignUpRequestBody(email, password, name, zealId)
+        _loading.value = true
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val response = repository.signUp(requestBody)
                 _signUpResponse.postValue(response)
             } catch (e: Exception) {
                 Log.e("SignUpViewModel", "Sign up failed: ${e.message}")
+            }
+            finally {
+                _loading.postValue(false) // Set loading to false once signup completes
             }
         }
     }
