@@ -1,4 +1,4 @@
-package com.example.lineup2025.auth.signup.ui
+package com.example.lineup2025.auth.ui
 
 import android.content.Context
 import android.content.Intent
@@ -10,15 +10,14 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import com.example.lineup2025.MainActivity
+import com.example.lineup2025.auth.repository.SignUpRepository
 import com.example.lineup2025.network.RetrofitApi.apiInterface
-import com.example.lineup2025.auth.signup.repository.SignUpRepository
-import com.example.lineup2025.auth.signup.viewmodel.SignUpViewModel
-import com.example.lineup2025.auth.signup.viewmodel.SignUpViewModelFactory
+import com.example.lineup2025.auth.viewmodel.SignUpViewModel
+import com.example.lineup2025.auth.viewmodel.SignUpViewModelFactory
 import com.example.lineup2025.databinding.ActivityRegisterBinding
 
-class Activity_Register : AppCompatActivity() {
+class RegisterActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityRegisterBinding
     private lateinit var progressBar: ProgressBar

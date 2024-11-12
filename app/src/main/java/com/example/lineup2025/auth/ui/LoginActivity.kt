@@ -1,4 +1,4 @@
-package com.example.lineup2025.auth.login.ui
+package com.example.lineup2025.auth.ui
 
 import android.content.Context
 import android.content.Intent
@@ -6,17 +6,13 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.example.lineup2025.MainActivity
-import com.example.lineup2025.R
-import com.example.lineup2025.auth.login.model.LoginRequestBody
-import com.example.lineup2025.auth.login.repository.LoginRepository
-import com.example.lineup2025.auth.login.viewmodel.LoginViewModel
-import com.example.lineup2025.auth.login.viewmodel.LoginViewModelFactory
+import com.example.lineup2025.auth.model.LoginRequestBody
+import com.example.lineup2025.auth.repository.LoginRepository
+import com.example.lineup2025.auth.viewmodel.LoginViewModel
+import com.example.lineup2025.auth.viewmodel.LoginViewModelFactory
 import com.example.lineup2025.databinding.ActivityLoginBinding
 import com.example.lineup2025.network.RetrofitApi
 

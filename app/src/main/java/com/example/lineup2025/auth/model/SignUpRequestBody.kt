@@ -1,4 +1,4 @@
-package com.example.lineup2025.auth.signup.model
+package com.example.lineup2025.auth.model
 
 data class SignUpRequestBody (
     val email: String,

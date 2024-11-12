@@ -1,9 +1,9 @@
 package com.example.lineup2025.network
 
-import com.example.lineup2025.auth.login.model.LoginRequestBody
-import com.example.lineup2025.auth.login.model.LoginResponseBody
-import com.example.lineup2025.auth.signup.model.SignUpRequestBody
-import com.example.lineup2025.auth.signup.model.SignUpResponseBody
+import com.example.lineup2025.auth.model.LoginRequestBody
+import com.example.lineup2025.auth.model.LoginResponseBody
+import com.example.lineup2025.auth.model.SignUpRequestBody
+import com.example.lineup2025.auth.model.SignUpResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST

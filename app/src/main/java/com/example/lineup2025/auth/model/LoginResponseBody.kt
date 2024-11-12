@@ -1,4 +1,4 @@
-package com.example.lineup2025.auth.login.model
+package com.example.lineup2025.auth.model
 
 data class LoginResponseBody (
     val name :String,

@@ -1,12 +1,13 @@
-package com.example.lineup2025.auth.signup.viewmodel
+package com.example.lineup2025.auth.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.lineup2025.auth.signup.model.SignUpRequestBody
-import com.example.lineup2025.auth.signup.model.SignUpResponseBody
-import com.example.lineup2025.auth.signup.repository.SignUpRepository
+import androidx.lifecycle.ViewModelProvider
+import com.example.lineup2025.auth.model.SignUpRequestBody
+import com.example.lineup2025.auth.model.SignUpResponseBody
+import com.example.lineup2025.auth.repository.SignUpRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -35,5 +36,14 @@ class SignUpViewModel(private val repository: SignUpRepository) : ViewModel() {
                 _loading.postValue(false) // Set loading to false once signup completes
             }
         }
+    }
+}
+
+class SignUpViewModelFactory(private val repository: SignUpRepository) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(SignUpViewModel::class.java)) {
+            return SignUpViewModel(repository) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
