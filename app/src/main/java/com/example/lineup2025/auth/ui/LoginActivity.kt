@@ -46,6 +46,7 @@ class LoginActivity : AppCompatActivity() {
             return
         }
 
+        showLoading()
         val loginRequest = LoginRequestBody(password = password, zealId = zealId)
         loginViewModel.login(loginRequest)
     }
@@ -80,14 +81,21 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun showLoading() {
-        binding.progressBar.visibility = View.VISIBLE
-        binding.relLayout.visibility = View.GONE
+        binding.mainLayout.alpha = 0.5f // Dim the background
+        binding.progressBar.visibility = View.VISIBLE // Show progress bar
+
+        binding.zeal.isEnabled = false
+        binding.password.isEnabled = false
     }
 
     private fun hideLoading() {
-        binding.progressBar.visibility = View.GONE
-        binding.relLayout.visibility = View.VISIBLE
+        binding.mainLayout.alpha = 1.0f // Reset dimming
+        binding.progressBar.visibility = View.GONE // Hide progress bar
+
+        binding.zeal.isEnabled = true
+        binding.password.isEnabled = true
     }
+
 
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()

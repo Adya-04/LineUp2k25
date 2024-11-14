@@ -99,13 +99,27 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun showLoading() {
-        progressBar.visibility = View.VISIBLE
-        binding.signUpRel.visibility = View.GONE
+        binding.mainLayout.alpha = 0.5f // Dim the background
+        binding.progressBar.visibility = View.VISIBLE // Show progress bar
+
+
+        // Disable text fields
+        binding.name.isEnabled = false
+        binding.email.isEnabled = false
+        binding.zeal.isEnabled = false
+        binding.password.isEnabled = false
     }
 
     private fun hideLoading() {
-        progressBar.visibility = View.GONE
-        binding.signUpRel.visibility = View.VISIBLE
+        binding.mainLayout.alpha = 1.0f // Reset dimming
+        binding.progressBar.visibility = View.GONE // Hide progress bar
+
+
+        // Re-enable text fields
+        binding.name.isEnabled = true
+        binding.email.isEnabled = true
+        binding.zeal.isEnabled = true
+        binding.password.isEnabled = true
     }
 
     private fun validateEmail(email: String): Boolean {

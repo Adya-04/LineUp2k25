@@ -33,7 +33,7 @@ class LoginViewModel(private val repository: LoginRepository) : ViewModel() {
                     _loading.value = false
                 }
             } catch (e: Exception) {
-                Log.e("LoginViewModel", "Sign up failed: ${e.message}")
+                Log.e("LoginViewModel", "Login failed: ${e.message}")
             }
 
         }
