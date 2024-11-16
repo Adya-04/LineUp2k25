@@ -1,35 +1,44 @@
 package com.example.lineup2025.auth.ui
 
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
-import com.example.lineup2025.MainActivity
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import com.example.lineup2025.R
 import com.example.lineup2025.auth.model.LoginRequestBody
 import com.example.lineup2025.auth.repository.LoginRepository
 import com.example.lineup2025.auth.viewmodel.LoginViewModel
 import com.example.lineup2025.auth.viewmodel.LoginViewModelFactory
-import com.example.lineup2025.databinding.ActivityLoginBinding
+import com.example.lineup2025.databinding.FragmentLoginBinding
 import com.example.lineup2025.network.RetrofitApi
 
-class LoginActivity : AppCompatActivity() {
+class LoginFragment : Fragment() {
 
-    private lateinit var binding: ActivityLoginBinding
+    private var _binding: FragmentLoginBinding? = null
+    private val binding get() = _binding!!
+
     private lateinit var sharedPreferences: SharedPreferences
     private val loginViewModel: LoginViewModel by viewModels {
         LoginViewModelFactory(LoginRepository(RetrofitApi.apiInterface))
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityLoginBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentLoginBinding.inflate(inflater,container,false)
+        return binding.root
+    }
 
-        sharedPreferences = getSharedPreferences("LineUpTokens", Context.MODE_PRIVATE)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        sharedPreferences = requireContext().getSharedPreferences("LineUpTokens", Context.MODE_PRIVATE)
 
         binding.loginBtn.setOnClickListener {
             logIn()
@@ -52,7 +61,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun setupObservers() {
-        loginViewModel.loginResponse.observe(this) { response ->
+        loginViewModel.loginResponse.observe(viewLifecycleOwner) { response ->
             if (response.isSuccessful) {
                 val editor = sharedPreferences.edit()
                 val bodyResponse = response.body()
@@ -64,8 +73,7 @@ class LoginActivity : AppCompatActivity() {
                         editor.apply()
 
                         showToast("Login Successful")
-                        startActivity(Intent(this, MainActivity::class.java))
-                        finish()
+                        findNavController().navigate(R.id.action_loginFragment_to_mainFragment)
                     } else {
                         showToast("User Not Found!")
                     }
@@ -75,7 +83,7 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
-        loginViewModel.loading.observe(this) { isLoading ->
+        loginViewModel.loading.observe(viewLifecycleOwner) { isLoading ->
             if (isLoading) showLoading() else hideLoading()
         }
     }
@@ -98,6 +106,11 @@ class LoginActivity : AppCompatActivity() {
 
 
     private fun showToast(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
