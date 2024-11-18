@@ -9,14 +9,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.example.lineup2025.R
 import com.example.lineup2025.auth.model.LoginRequestBody
-import com.example.lineup2025.auth.repository.LoginRepository
-import com.example.lineup2025.auth.viewmodel.LoginViewModel
-import com.example.lineup2025.auth.viewmodel.LoginViewModelFactory
+import com.example.lineup2025.auth.repository.AuthRepository
+import com.example.lineup2025.auth.viewmodel.AuthViewModel
+import com.example.lineup2025.auth.viewmodel.AuthViewModelFactory
 import com.example.lineup2025.databinding.FragmentLoginBinding
 import com.example.lineup2025.network.RetrofitApi
+import com.example.lineup2025.utils.NetworkResult
 
 class LoginFragment : Fragment() {
 
@@ -24,8 +26,8 @@ class LoginFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var sharedPreferences: SharedPreferences
-    private val loginViewModel: LoginViewModel by viewModels {
-        LoginViewModelFactory(LoginRepository(RetrofitApi.apiInterface))
+    private val authViewModel: AuthViewModel by viewModels {
+        AuthViewModelFactory(AuthRepository(RetrofitApi.apiInterface))
     }
 
     override fun onCreateView(
@@ -57,35 +59,42 @@ class LoginFragment : Fragment() {
 
         showLoading()
         val loginRequest = LoginRequestBody(password = password, zealId = zealId)
-        loginViewModel.login(loginRequest)
+        authViewModel.login(loginRequest)
     }
 
     private fun setupObservers() {
-        loginViewModel.loginResponse.observe(viewLifecycleOwner) { response ->
-            if (response.isSuccessful) {
-                val editor = sharedPreferences.edit()
-                val bodyResponse = response.body()
-                bodyResponse?.let {
-                    if (it.message == "Login successful") {
-                        editor.putString("Token", it.token)
-                        editor.putString("Name", it.name)
-                        editor.putStringSet("scannedQRSet", HashSet(it.scannedCodes))
-                        editor.apply()
+        authViewModel.loginResponseLiveData.observe(viewLifecycleOwner, Observer {
+            hideLoading()
+            when (it) {
+                is NetworkResult.Success -> {
+                    val editor = sharedPreferences.edit()
+                    val bodyResponse = it.data
+                    bodyResponse?.let { response ->
+                        if (response.message == "Login successful") {
+                            editor.putString("Token", response.token)
+                            editor.putString("Name", response.name)
+                            editor.putStringSet("scannedQRSet", HashSet(response.scannedCodes))
+                            editor.apply()
 
-                        showToast("Login Successful")
-                        findNavController().navigate(R.id.action_loginFragment_to_mainFragment)
-                    } else {
-                        showToast("User Not Found!")
+                            showToast("Login Successful")
+                            findNavController().navigate(R.id.action_loginFragment_to_mainFragment)
+                        } else {
+                            showToast("User Not Found!")
+                        }
                     }
                 }
-            } else {
-                showToast("Login Failed")
-            }
-        }
 
-        loginViewModel.loading.observe(viewLifecycleOwner) { isLoading ->
-            if (isLoading) showLoading() else hideLoading()
-        }
+                is NetworkResult.Error -> {
+                    showToast(it.message.toString())
+                }
+
+                is NetworkResult.Loading -> {
+                    showLoading()
+                }
+
+                else -> {}
+            }
+        })
     }
 
     private fun showLoading() {

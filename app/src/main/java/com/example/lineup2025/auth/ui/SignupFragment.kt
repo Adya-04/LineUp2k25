@@ -11,13 +11,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.example.lineup2025.R
-import com.example.lineup2025.auth.repository.SignUpRepository
-import com.example.lineup2025.auth.viewmodel.SignUpViewModel
-import com.example.lineup2025.auth.viewmodel.SignUpViewModelFactory
+import com.example.lineup2025.auth.model.SignUpRequestBody
+import com.example.lineup2025.auth.repository.AuthRepository
+import com.example.lineup2025.auth.viewmodel.AuthViewModel
+import com.example.lineup2025.auth.viewmodel.AuthViewModelFactory
 import com.example.lineup2025.databinding.FragmentSignupBinding
 import com.example.lineup2025.network.RetrofitApi.apiInterface
+import com.example.lineup2025.utils.NetworkResult
 
 class SignupFragment : Fragment() {
 
@@ -26,8 +29,8 @@ class SignupFragment : Fragment() {
 
     private lateinit var sharedPreferences: SharedPreferences
 
-    private val signUpViewModel: SignUpViewModel by viewModels {
-        SignUpViewModelFactory(SignUpRepository(apiInterface))
+    private val authViewModel: AuthViewModel by viewModels {
+        AuthViewModelFactory(AuthRepository(apiInterface))
     }
 
     override fun onCreateView(
@@ -50,23 +53,34 @@ class SignupFragment : Fragment() {
     }
 
     private fun setupObservers() {
-        signUpViewModel.signUpResponse.observe(viewLifecycleOwner) { response ->
-            if (response.isSuccessful) {
-                val responseBody = response.body()
-                responseBody?.let {
-                    if (it.message == "Signup successful") {
-                        sharedPreferences.edit().putString("Token", it.token).apply()
-                        Toast.makeText(requireContext(), "Registered Successfully", Toast.LENGTH_SHORT).show()
+        authViewModel.signUpResponseLiveData.observe(viewLifecycleOwner, Observer {
+            hideLoading()
+            when (it) {
+                is NetworkResult.Success -> {
+                    val bodyResponse = it.data
+                    bodyResponse?.let { response ->
+                        if (response.message == "Signup successful") {
+                            sharedPreferences.edit().putString("Token", response.token).apply()
+                            showToast("Registered Successfully")
                         findNavController().navigate(R.id.action_signupFragment_to_characterSelectFragment)
+
+                        } else {
+                            showToast("Zeal Id is already registered")
+                        }
                     }
                 }
-            } else {
-                Toast.makeText(requireContext(), "Zeal Id is already registered", Toast.LENGTH_SHORT).show()
+
+                is NetworkResult.Error -> {
+                    showToast(it.message.toString())
+                }
+
+                is NetworkResult.Loading -> {
+                    showLoading()
+                }
+
+                else -> {}
             }
-        }
-        signUpViewModel.loading.observe(viewLifecycleOwner) { isLoading ->
-            if (isLoading) showLoading() else hideLoading()
-        }
+        })
     }
 
     private fun registration() {
@@ -87,7 +101,8 @@ class SignupFragment : Fragment() {
         } else {
             showLoading()
             try {
-                signUpViewModel.signUp(emailtxt, passwordtxt, fullnametxt, zealidtxt)
+                val signupRequest = SignUpRequestBody(emailtxt, passwordtxt, fullnametxt, zealidtxt)
+                authViewModel.signUpUser(signupRequest)
             } catch (e: Exception) {
                 Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_LONG).show()
                 Log.e("SignupFragment", "Error during signup", e)
@@ -124,6 +139,10 @@ class SignupFragment : Fragment() {
         binding.email.isEnabled = true
         binding.zeal.isEnabled = true
         binding.password.isEnabled = true
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 
     private fun validateEmail(email: String): Boolean {
