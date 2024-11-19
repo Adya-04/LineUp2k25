@@ -1,4 +1,4 @@
-package com.example.lineup2025.network
+package com.example.lineup2025.api
 
 import com.example.lineup2025.auth.model.LoginRequestBody
 import com.example.lineup2025.auth.model.LoginResponseBody

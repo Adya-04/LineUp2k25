@@ -13,22 +13,20 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.example.lineup2025.R
 import com.example.lineup2025.auth.model.LoginRequestBody
-import com.example.lineup2025.auth.repository.AuthRepository
 import com.example.lineup2025.auth.viewmodel.AuthViewModel
-import com.example.lineup2025.auth.viewmodel.AuthViewModelFactory
 import com.example.lineup2025.databinding.FragmentLoginBinding
-import com.example.lineup2025.network.RetrofitApi
 import com.example.lineup2025.utils.NetworkResult
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class LoginFragment : Fragment() {
 
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var sharedPreferences: SharedPreferences
-    private val authViewModel: AuthViewModel by viewModels {
-        AuthViewModelFactory(AuthRepository(RetrofitApi.apiInterface))
-    }
+
+    private val authViewModel by viewModels <AuthViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -56,8 +54,6 @@ class LoginFragment : Fragment() {
             showToast("Please enter your ZealId and Password")
             return
         }
-
-        showLoading()
         val loginRequest = LoginRequestBody(password = password, zealId = zealId)
         authViewModel.login(loginRequest)
     }

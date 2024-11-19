@@ -15,13 +15,12 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.example.lineup2025.R
 import com.example.lineup2025.auth.model.SignUpRequestBody
-import com.example.lineup2025.auth.repository.AuthRepository
 import com.example.lineup2025.auth.viewmodel.AuthViewModel
-import com.example.lineup2025.auth.viewmodel.AuthViewModelFactory
 import com.example.lineup2025.databinding.FragmentSignupBinding
-import com.example.lineup2025.network.RetrofitApi.apiInterface
 import com.example.lineup2025.utils.NetworkResult
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class SignupFragment : Fragment() {
 
     private var _binding: FragmentSignupBinding? = null
@@ -29,9 +28,7 @@ class SignupFragment : Fragment() {
 
     private lateinit var sharedPreferences: SharedPreferences
 
-    private val authViewModel: AuthViewModel by viewModels {
-        AuthViewModelFactory(AuthRepository(apiInterface))
-    }
+    private val authViewModel by viewModels<AuthViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -99,7 +96,6 @@ class SignupFragment : Fragment() {
         } else if (!validateEmail(emailtxt)) {
             showError("Please enter a valid email")
         } else {
-            showLoading()
             try {
                 val signupRequest = SignUpRequestBody(emailtxt, passwordtxt, fullnametxt, zealidtxt)
                 authViewModel.signUpUser(signupRequest)

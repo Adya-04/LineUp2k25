@@ -6,11 +6,12 @@ import com.example.lineup2025.auth.model.LoginRequestBody
 import com.example.lineup2025.auth.model.LoginResponseBody
 import com.example.lineup2025.auth.model.SignUpRequestBody
 import com.example.lineup2025.auth.model.SignUpResponseBody
-import com.example.lineup2025.network.APIService
+import com.example.lineup2025.api.APIService
 import com.example.lineup2025.utils.NetworkResult
 import org.json.JSONObject
+import javax.inject.Inject
 
-class AuthRepository(private val apiService: APIService) {
+class AuthRepository @Inject constructor(private val apiService: APIService) {
 
     private val _loginResponseLivedata = MutableLiveData<NetworkResult<LoginResponseBody>>()
     val loginResponseLiveData: LiveData<NetworkResult<LoginResponseBody>>
