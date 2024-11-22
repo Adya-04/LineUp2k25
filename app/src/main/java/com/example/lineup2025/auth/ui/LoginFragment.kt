@@ -41,21 +41,18 @@ class LoginFragment : Fragment() {
         sharedPreferences = requireContext().getSharedPreferences("LineUpTokens", Context.MODE_PRIVATE)
 
         binding.loginBtn.setOnClickListener {
-            logIn()
+
+            binding.loginBtn.isEnabled = false
+            val validateResult = validateLoginUserInput()
+            if(validateResult.first){
+                authViewModel.login(getLoginRequest())
+            }
+            else{
+                showError(validateResult.second)
+            }
         }
 
         setupObservers()
-    }
-    private fun logIn() {
-        val zealId = binding.zeal.text.trim().toString()
-        val password = binding.password.text.trim().toString()
-
-        if (zealId.isEmpty() || password.isEmpty()) {
-            showToast("Please enter your ZealId and Password")
-            return
-        }
-        val loginRequest = LoginRequestBody(password = password, zealId = zealId)
-        authViewModel.login(loginRequest)
     }
 
     private fun setupObservers() {
@@ -74,6 +71,7 @@ class LoginFragment : Fragment() {
 
                             showToast("Login Successful")
                             findNavController().navigate(R.id.action_loginFragment_to_mainFragment)
+                            //fun deletepreviousstate
                         } else {
                             showToast("User Not Found!")
                         }
@@ -93,6 +91,17 @@ class LoginFragment : Fragment() {
         })
     }
 
+    private fun getLoginRequest(): LoginRequestBody{
+        val zealId = binding.zeal.text.trim().toString()
+        val password = binding.password.text.trim().toString()
+        return LoginRequestBody(password,zealId)
+    }
+
+    private fun validateLoginUserInput(): Pair<Boolean,String> {
+        val getLoginRequest = getLoginRequest()
+        return authViewModel.validateLoginCredentials(getLoginRequest.zealId,getLoginRequest.password)
+    }
+
     private fun showLoading() {
         binding.mainLayout.alpha = 0.5f // Dim the background
         binding.progressBar.visibility = View.VISIBLE // Show progress bar
@@ -109,6 +118,11 @@ class LoginFragment : Fragment() {
         binding.password.isEnabled = true
     }
 
+
+    private fun showError(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+        binding.loginBtn.isEnabled = true
+    }
 
     private fun showToast(message: String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()

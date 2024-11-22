@@ -3,8 +3,6 @@ package com.example.lineup2025.auth.ui
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
-import android.util.Patterns
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -43,7 +41,15 @@ class SignupFragment : Fragment() {
         sharedPreferences = requireContext().getSharedPreferences("LineUpTokens", Context.MODE_PRIVATE)
 
         binding.regtbtn.setOnClickListener {
-            registration()
+
+            binding.regtbtn.isEnabled = false
+            val validateResult = validateUserInput()
+            if(validateResult.first){
+                authViewModel.signUpUser(getSignupRequestBody())
+            }
+            else{
+                showError(validateResult.second)
+            }
         }
 
         setupObservers()
@@ -80,37 +86,22 @@ class SignupFragment : Fragment() {
         })
     }
 
-    private fun registration() {
-        binding.regtbtn.isEnabled = false
-        binding.regText.isEnabled = false
-
+    private fun getSignupRequestBody(): SignUpRequestBody{
         val fullnametxt = binding.name.text.trim().toString()
         val emailtxt = binding.email.text.toString()
         val zealidtxt = binding.zeal.text.trim().toString()
         val passwordtxt = binding.password.text.trim().toString()
+        return SignUpRequestBody(emailtxt,passwordtxt,fullnametxt,zealidtxt)
+    }
 
-        if (fullnametxt.isEmpty() || emailtxt.isEmpty() || zealidtxt.isEmpty() || passwordtxt.isEmpty()) {
-            showError("Please fill all the fields")
-        } else if (zealidtxt.length < 6) {
-            showError("Zeal Id must have 6 characters")
-        } else if (!validateEmail(emailtxt)) {
-            showError("Please enter a valid email")
-        } else {
-            try {
-                val signupRequest = SignUpRequestBody(emailtxt, passwordtxt, fullnametxt, zealidtxt)
-                authViewModel.signUpUser(signupRequest)
-            } catch (e: Exception) {
-                Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_LONG).show()
-                Log.e("SignupFragment", "Error during signup", e)
-                e.printStackTrace() // Log the exception stack trace
-            }
-        }
+    private fun validateUserInput(): Pair<Boolean,String>{
+        val signUpRequestBody = getSignupRequestBody()
+        return authViewModel.validateSignupCredentials(signUpRequestBody.name,signUpRequestBody.email,signUpRequestBody.zealId,signUpRequestBody.password)
     }
 
     private fun showError(message: String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
         binding.regtbtn.isEnabled = true
-        binding.regText.isEnabled = true
     }
 
     private fun showLoading() {
@@ -139,10 +130,6 @@ class SignupFragment : Fragment() {
 
     private fun showToast(message: String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
-    }
-
-    private fun validateEmail(email: String): Boolean {
-        return email.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
     override fun onDestroyView() {
