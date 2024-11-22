@@ -1,11 +1,14 @@
 package com.example.lineup2025.api
 
+import com.example.lineup2025.auth.model.AvatarRequest
+import com.example.lineup2025.auth.model.AvatarResponse
 import com.example.lineup2025.auth.model.LoginRequestBody
 import com.example.lineup2025.auth.model.LoginResponseBody
 import com.example.lineup2025.auth.model.SignUpRequestBody
 import com.example.lineup2025.auth.model.SignUpResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.Header
 import retrofit2.http.POST
 
 interface APIService {
@@ -14,4 +17,7 @@ interface APIService {
 
     @POST("user/login")
     suspend fun login(@Body login: LoginRequestBody): Response<LoginResponseBody>
+
+    @POST("user/store-avatar")
+    suspend fun storeAvatar(@Header("Authorization") token: String, @Body avatar:AvatarRequest ): Response<AvatarResponse>
 }

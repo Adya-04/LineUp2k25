@@ -3,6 +3,7 @@ package com.example.lineup2025.auth.ui
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -64,6 +65,7 @@ class SignupFragment : Fragment() {
                     bodyResponse?.let { response ->
                         if (response.message == "Signup successful") {
                             sharedPreferences.edit().putString("Token", response.token).apply()
+                            Log.d("SignupFragment", "Signup successful. Token: ${response.token}")
                             showToast("Registered Successfully")
                         findNavController().navigate(R.id.action_signupFragment_to_characterSelectFragment)
 

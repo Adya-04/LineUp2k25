@@ -44,9 +44,9 @@
     </fragment>
     <fragment
         android:id="@+id/characterSelectFragment"
-        android:name="com.example.lineup2025.CharacterSelectFragment"
+        android:name="com.example.lineup2025.auth.ui.AvatarSelectFragment"
         android:label="fragment_character_select"
-        tools:layout="@layout/fragment_character_select" >
+        tools:layout="@layout/fragment_avatar_select" >
         <action
             android:id="@+id/action_characterSelectFragment_to_mainFragment"
             app:destination="@id/mainFragment"
