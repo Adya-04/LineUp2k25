@@ -48,7 +48,16 @@
         android:label="fragment_character_select"
         tools:layout="@layout/fragment_avatar_select" >
         <action
-            android:id="@+id/action_characterSelectFragment_to_mainFragment"
+            android:id="@+id/action_characterSelectFragment_to_rulesFragment"
+            app:destination="@id/rulesFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/rulesFragment"
+        android:name="com.example.lineup2025.RulesFragment"
+        android:label="fragment_rules"
+        tools:layout="@layout/fragment_rules" >
+        <action
+            android:id="@+id/action_rulesFragment_to_mainFragment"
             app:destination="@id/mainFragment"
             app:popUpTo="@id/welcomeFragment"
             app:popUpToInclusive="true" />

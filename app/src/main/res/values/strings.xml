@@ -13,4 +13,12 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="choose_your_n_avatar">Choose your \n Avatar</string>
     <string name="next">Next</string>
+    <string name="finish">Finish</string>
+    <string name="read_the_rules">Read the Rules</string>
+    <string name="we_need_your_help">WE NEED YOUR HELP!\n</string>
+    <string name="rule_1">We’re on the lookout for other players, and so far, you’re our only hope.</string>
+    <string name="rule_2">Show the QR code to your band members.</string>
+    <string name="rule_3">Use radar to find rest of the players , scan their QRs and ascend the leaderboard.</string>
+    <string name="rule_4">Keep you location turned on :)</string>
+    <string name="rule_5">Map refreshes automatically every 5 seconds, manual refresh can be done via button click.</string>
 </resources>

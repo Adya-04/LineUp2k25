@@ -64,7 +64,12 @@ class SignupFragment : Fragment() {
                     val bodyResponse = it.data
                     bodyResponse?.let { response ->
                         if (response.message == "Signup successful") {
-                            sharedPreferences.edit().putString("Token", response.token).apply()
+                            val fullnametxt = binding.name.text.trim().toString()
+                            val editor = sharedPreferences.edit()
+                            editor.putString("Token", response.token)
+                            editor.putString("Name", fullnametxt)
+                            editor.apply()
+
                             Log.d("SignupFragment", "Signup successful. Token: ${response.token}")
                             showToast("Registered Successfully")
                         findNavController().navigate(R.id.action_signupFragment_to_characterSelectFragment)

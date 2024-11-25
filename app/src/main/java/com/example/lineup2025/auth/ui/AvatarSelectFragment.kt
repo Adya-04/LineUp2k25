@@ -129,7 +129,7 @@ class AvatarSelectFragment : Fragment() {
             when (it) {
                 is NetworkResult.Success -> {
                     showToast("Avatar selected successfully")
-                    findNavController().navigate(R.id.action_characterSelectFragment_to_mainFragment)
+                    findNavController().navigate(R.id.action_characterSelectFragment_to_rulesFragment)
                 }
 
                 is NetworkResult.Error -> {

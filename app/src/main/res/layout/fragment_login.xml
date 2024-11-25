@@ -13,7 +13,7 @@
         android:alpha="1.0">
 
         <include
-            android:id="@+id/lin_lay"
+            android:id="@+id/lineupSymbol"
             layout="@layout/lineup_symbol"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -35,7 +35,7 @@
             android:textSize="35sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lin_lay" />
+            app:layout_constraintTop_toBottomOf="@id/lineupSymbol" />
 
         <EditText
             android:id="@+id/zeal"
