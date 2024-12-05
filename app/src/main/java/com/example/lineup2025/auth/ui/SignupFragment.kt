@@ -1,7 +1,5 @@
 package com.example.lineup2025.auth.ui
 
-import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -17,7 +15,9 @@ import com.example.lineup2025.auth.model.SignUpRequestBody
 import com.example.lineup2025.auth.viewmodel.AuthViewModel
 import com.example.lineup2025.databinding.FragmentSignupBinding
 import com.example.lineup2025.utils.NetworkResult
+import com.example.lineup2025.utils.TokenManager
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class SignupFragment : Fragment() {
@@ -25,7 +25,8 @@ class SignupFragment : Fragment() {
     private var _binding: FragmentSignupBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var sharedPreferences: SharedPreferences
+    @Inject
+    lateinit var tokenManager: TokenManager
 
     private val authViewModel by viewModels<AuthViewModel>()
 
@@ -39,7 +40,6 @@ class SignupFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        sharedPreferences = requireContext().getSharedPreferences("LineUpTokens", Context.MODE_PRIVATE)
 
         binding.regtbtn.setOnClickListener {
 
@@ -65,10 +65,7 @@ class SignupFragment : Fragment() {
                     bodyResponse?.let { response ->
                         if (response.message == "Signup successful") {
                             val fullnametxt = binding.name.text.trim().toString()
-                            val editor = sharedPreferences.edit()
-                            editor.putString("Token", response.token)
-                            editor.putString("Name", fullnametxt)
-                            editor.apply()
+                            tokenManager.saveToken(response.token, fullnametxt)
 
                             Log.d("SignupFragment", "Signup successful. Token: ${response.token}")
                             showToast("Registered Successfully")

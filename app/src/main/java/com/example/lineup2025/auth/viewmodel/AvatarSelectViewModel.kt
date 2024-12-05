@@ -17,9 +17,9 @@ class AvatarSelectViewModel @Inject constructor(private val repository: AvatarSe
     val storeAvatarResponseLiveData: LiveData<NetworkResult<AvatarResponse>>
         get() = repository.storeAvatarResponseLiveData
 
-    fun storeAvatar(token: String, avatarRequest: AvatarRequest) {
+    fun storeAvatar(avatarRequest: AvatarRequest) {
         viewModelScope.launch {
-            repository.storeAvatar(token, avatarRequest)
+            repository.storeAvatar(avatarRequest)
         }
     }
 }

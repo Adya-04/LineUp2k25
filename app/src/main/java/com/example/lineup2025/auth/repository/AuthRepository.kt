@@ -6,12 +6,12 @@ import com.example.lineup2025.auth.model.LoginRequestBody
 import com.example.lineup2025.auth.model.LoginResponseBody
 import com.example.lineup2025.auth.model.SignUpRequestBody
 import com.example.lineup2025.auth.model.SignUpResponseBody
-import com.example.lineup2025.api.APIService
+import com.example.lineup2025.api.UserAPI
 import com.example.lineup2025.utils.NetworkResult
 import org.json.JSONObject
 import javax.inject.Inject
 
-class AuthRepository @Inject constructor(private val apiService: APIService) {
+class AuthRepository @Inject constructor(private val userApi: UserAPI) {
 
     private val _loginResponseLivedata = MutableLiveData<NetworkResult<LoginResponseBody>>()
     val loginResponseLiveData: LiveData<NetworkResult<LoginResponseBody>>
@@ -23,7 +23,7 @@ class AuthRepository @Inject constructor(private val apiService: APIService) {
 
     suspend fun login(loginRequestBody: LoginRequestBody) {
         _loginResponseLivedata.postValue(NetworkResult.Loading())
-        val response = apiService.login(loginRequestBody)
+        val response = userApi.login(loginRequestBody)
         if (response.isSuccessful) {
             val responseBody = response.body()
             if (responseBody != null) {
@@ -42,7 +42,7 @@ class AuthRepository @Inject constructor(private val apiService: APIService) {
 
     suspend fun signUp(signUpRequestBody: SignUpRequestBody) {
         _signUpResponseLivedata.postValue(NetworkResult.Loading())
-        val response = apiService.signUp(signUpRequestBody)
+        val response = userApi.signUp(signUpRequestBody)
         if (response.isSuccessful) {
             val responseBody = response.body()
             if (responseBody != null) {

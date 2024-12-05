@@ -1,12 +1,15 @@
 package com.example.lineup2025.di
 
-import com.example.lineup2025.api.APIService
+import com.example.lineup2025.api.AuthInterceptor
+import com.example.lineup2025.api.MainAPI
+import com.example.lineup2025.api.UserAPI
 import com.example.lineup2025.utils.Constants.BASE_URL
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import retrofit2.Retrofit
+import okhttp3.OkHttpClient
+import retrofit2.Retrofit.Builder
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
@@ -16,17 +19,30 @@ class NetworkModule {
 
     @Singleton
     @Provides
-    fun providesRetrofit(): Retrofit {
-        return Retrofit.Builder()
+    fun providesRetrofitBuilder(): Builder {
+        return Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
-            .build()
     }
 
     @Singleton
     @Provides
-    fun provideAPIService(retrofit: Retrofit): APIService {
-        return retrofit.create(APIService::class.java)
+    fun provideOkHttpClient(authInterceptor: AuthInterceptor): OkHttpClient {
+        return OkHttpClient.Builder().addInterceptor(authInterceptor).build()
+    }
+
+    @Singleton
+    @Provides
+    fun providesUserAPI(retrofitBuilder: Builder): UserAPI {
+        return retrofitBuilder.build().create(UserAPI::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun providesMainAPI(retrofitBuilder: Builder, okHttpClient: OkHttpClient): MainAPI{
+        return retrofitBuilder
+            .client(okHttpClient)
+            .build().create(MainAPI::class.java)
     }
 
 

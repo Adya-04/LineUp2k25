@@ -1,7 +1,5 @@
 package com.example.lineup2025.auth.ui
 
-import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.LayoutInflater
@@ -32,8 +30,6 @@ class AvatarSelectFragment : Fragment() {
     private var _binding: FragmentAvatarSelectBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var sharedPreferences: SharedPreferences
-
     private var currentVisiblePosition = 0
     private var visibleImage : Int = 0
 
@@ -49,10 +45,6 @@ class AvatarSelectFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        sharedPreferences =
-            requireContext().getSharedPreferences("LineUpTokens", Context.MODE_PRIVATE)
-        val retrievedValue = sharedPreferences.getString("Token", "defaultValue")
-        val header = "Bearer $retrievedValue"
 
         val characters = intArrayOf(
             R.drawable.red_avatar,
@@ -67,7 +59,7 @@ class AvatarSelectFragment : Fragment() {
         setupViewPager(characters)
 
         binding.nextBtn.setOnClickListener {
-            avatarSelectViewModel.storeAvatar(header, AvatarRequest(visibleImage))
+            avatarSelectViewModel.storeAvatar(AvatarRequest(visibleImage))
         }
         setupObservers()
     }
