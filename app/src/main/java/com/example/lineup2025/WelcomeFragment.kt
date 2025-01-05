@@ -1,6 +1,8 @@
 package com.example.lineup2025
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -20,14 +22,22 @@ class WelcomeFragment : Fragment() {
     @Inject
     lateinit var tokenManager: TokenManager
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentWelcomeBinding.inflate(inflater, container, false)
 
+        Log.d("Welcome Fragment", "${tokenManager.getToken()}")
+
         if(tokenManager.getToken() != null){
-            findNavController().navigate(R.id.action_welcomeFragment_to_mainFragment)
+            startActivity(Intent(activity as MainActivity,BottomNavigationActivity::class.java))
+            (activity as MainActivity).finish()
         }
 
         binding.loginBtn.setOnClickListener {

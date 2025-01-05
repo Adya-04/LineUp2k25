@@ -1,59 +1,106 @@
 package com.example.lineup2025
 
 import android.os.Bundle
+import android.os.Handler
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
+import com.example.lineup2025.databinding.FragmentRouteBinding
+import com.example.lineup2025.model.Location
+import com.example.lineup2025.utils.NetworkResult
+import com.example.lineup2025.viewmodel.AccessAvatarViewModel
+import com.example.lineup2025.viewmodel.RouteViewModel
+import com.skyfishjy.library.RippleBackground
+import dagger.hilt.android.AndroidEntryPoint
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [RouteFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
+@AndroidEntryPoint
 class RouteFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+    private var _binding : FragmentRouteBinding? = null
+    private val binding get() = _binding!!
+    private var rippleBackground: RippleBackground? = null
+    private val accessAvatarViewModel by viewModels<AccessAvatarViewModel>()
+    private val routeViewModel by viewModels<RouteViewModel>()
+    private lateinit var radarView: RadarView
+    private val handler = Handler()
+
+    private val apiRunnable = object : Runnable {
+        override fun run() {
+            routeViewModel.getRoute()
+            handler.postDelayed(this, 5000) // Schedule the next call after 5 seconds
         }
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_route, container, false)
+    ): View {
+        _binding = FragmentRouteBinding.inflate(inflater,container,false)
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment RouteFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            RouteFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        radarView = binding.radarview
+        radarView.setupViewModel(accessAvatarViewModel, viewLifecycleOwner)
+        binding.rippleBg.startRippleAnimation()
+        setupObservers()
+        routeViewModel.getRoute()
+    }
+
+    private fun setupObservers() {
+        routeViewModel.getRouteResponseLiveData.observe(viewLifecycleOwner, Observer {
+            when (it) {
+                is NetworkResult.Success -> {
+                    val bodyResponse = it.data
+                    bodyResponse?.let { response ->
+                        Log.d("Route Fragment", "$response")
+                        val users = response.nearestUsers.map { user ->
+                            Log.d("Route Fragment", "Inside this block")
+                            val location = Location(user.name, user.avatar, user.distance, user.direction)
+                            Log.d("Route Fragment", "Location Created: $location")
+                            location
+                        }
+                        // Update RadarView with the new route data
+                        radarView.setUsers(users)
+                    }
+                }
+
+                is NetworkResult.Error -> {
+                    showToast(it.message.toString())
+                    Log.d("RouteFragment", "Error: ${it.message}")
+                }
+
+                is NetworkResult.Loading -> {
+//                    showLoading()
                 }
             }
+        })
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Start the periodic API call
+        handler.post(apiRunnable)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        // Stop the periodic API call
+        handler.removeCallbacks(apiRunnable)
     }
 }

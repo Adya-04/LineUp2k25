@@ -7,6 +7,7 @@ import com.example.lineup2025.auth.model.AvatarRequest
 import com.example.lineup2025.auth.model.AvatarResponse
 import com.example.lineup2025.utils.NetworkResult
 import org.json.JSONObject
+import java.net.SocketTimeoutException
 import javax.inject.Inject
 
 class AvatarSelectRepository @Inject constructor(private val mainApi: MainAPI) {
@@ -14,24 +15,27 @@ class AvatarSelectRepository @Inject constructor(private val mainApi: MainAPI) {
     val storeAvatarResponseLiveData: LiveData<NetworkResult<AvatarResponse>>
         get() = _storeAvatarResponseLiveData
 
-    suspend fun storeAvatar(avatarRequest: AvatarRequest){
+    suspend fun storeAvatar(avatarRequest: AvatarRequest) {
         _storeAvatarResponseLiveData.postValue(NetworkResult.Loading())
-        val response = mainApi.storeAvatar(avatarRequest)
-        if(response.isSuccessful){
-            val responseBody = response.body()
-            if(responseBody != null){
-                _storeAvatarResponseLiveData.postValue(NetworkResult.Success(responseBody))
+        try {
+            val response = mainApi.storeAvatar(avatarRequest)
+            if (response.isSuccessful) {
+                val responseBody = response.body()
+                if (responseBody != null) {
+                    _storeAvatarResponseLiveData.postValue(NetworkResult.Success(responseBody))
+                } else {
+                    _storeAvatarResponseLiveData.postValue(NetworkResult.Error("Response body is null"))
+                }
+            } else if (response.errorBody() != null) {
+                val errObj = JSONObject(response.errorBody()!!.charStream().readText())
+                _storeAvatarResponseLiveData.postValue(NetworkResult.Error(errObj.getString("message")))
+            } else {
+                _storeAvatarResponseLiveData.postValue(NetworkResult.Error("Something went wrong"))
             }
-            else{
-                _storeAvatarResponseLiveData.postValue(NetworkResult.Error("Response body is null"))
-            }
-        }
-        else if(response.errorBody()!= null){
-            val errObj = JSONObject(response.errorBody()!!.charStream().readText())
-            _storeAvatarResponseLiveData.postValue(NetworkResult.Error(errObj.getString("message")))
-        }
-        else {
-            _storeAvatarResponseLiveData.postValue(NetworkResult.Error("Something went wrong"))
+        } catch (e: SocketTimeoutException) {
+            _storeAvatarResponseLiveData.postValue(NetworkResult.Error("Please try again!"))
+        } catch (e: Exception) {
+            _storeAvatarResponseLiveData.postValue(NetworkResult.Error("Unexpected error occurred"))
         }
     }
 }

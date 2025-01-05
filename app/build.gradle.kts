@@ -74,4 +74,7 @@ dependencies {
     // QR and Scanner
     implementation ("com.journeyapps:zxing-android-embedded:4.3.0")
     implementation ("com.google.zxing:core:3.4.1")
+
+    //Ripple Background
+    implementation("com.skyfishjy.ripplebackground:library:1.0.1")
 }
