@@ -4,20 +4,25 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.example.lineup2025.databinding.ActivityBottomNavigationBinding
+import com.example.lineup2025.services.ForeGroundLocationUpdates
+import com.example.lineup2025.services.LocationUpdates
+import com.example.lineup2025.ui.LeaderBoardFragment
+import com.example.lineup2025.ui.QRCodeFragment
+import com.example.lineup2025.ui.QRScannerFragment
+import com.example.lineup2025.ui.RouteFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -44,13 +49,7 @@ class BottomNavigationActivity : AppCompatActivity() {
             true
         }
 
-        if (!checkCameraPermission()) {
-            requestCameraPermission()
-        }
-
-        if (!checkLocationPermission()) {
-            requestLocationPermission()
-        }
+        requestRequiredPermissions()
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -71,12 +70,23 @@ class BottomNavigationActivity : AppCompatActivity() {
         })
     }
 
-    private fun requestCameraPermission() {
-        ActivityCompat.requestPermissions(
-            this,
-            arrayOf(Manifest.permission.CAMERA),
-            CAMERA_PERMISSION_REQUEST_CODE
-        )
+    private fun requestRequiredPermissions() {
+        // First, check if any permissions are missing
+        val permissionsToRequest = mutableListOf<String>()
+        if (!checkCameraPermission()) {
+            permissionsToRequest.add(Manifest.permission.CAMERA)
+        }
+        if (!checkLocationPermission()) {
+            permissionsToRequest.add(Manifest.permission.ACCESS_FINE_LOCATION)
+        }
+
+        if (permissionsToRequest.isNotEmpty()) {
+            ActivityCompat.requestPermissions(
+                this,
+                permissionsToRequest.toTypedArray(),
+                CAMERA_PERMISSION_REQUEST_CODE // Use the same request code
+            )
+        }
     }
 
     private fun checkCameraPermission(): Boolean {
@@ -94,46 +104,47 @@ class BottomNavigationActivity : AppCompatActivity() {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-    private fun requestLocationPermission() {
-        ActivityCompat.requestPermissions(
-            this,
-            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-            LOCATION_PERMISSION_REQUEST_CODE
-        )
-    }
-
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        when (requestCode) {
-            CAMERA_PERMISSION_REQUEST_CODE -> {
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // Camera permission granted
-                } else {
-                    // Handle camera permission denial
-                    showSettingsDialog()
-                }
-            }
-            LOCATION_PERMISSION_REQUEST_CODE -> {
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // Location permission granted
-                } else {
-                    // Handle location permission denial
-                    showSettingsDialog()
+        if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
+            for (i in permissions.indices) {
+                val permission = permissions[i]
+                val grantResult = grantResults[i]
+
+                if (grantResult != PackageManager.PERMISSION_GRANTED) {
+                    if (!ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
+                        // User denied with "Don't ask again"
+                        showSettingsDialog(permission)
+                    } else {
+                        // Permission denied but not permanently
+                        Toast.makeText(
+                            this,
+                            "$permission is required for this feature.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        showSettingsDialog(permission)
+                    }
                 }
             }
         }
     }
 
-    private fun showSettingsDialog() {
-        Toast.makeText(this , "Location and Camera permissions required!", Toast.LENGTH_SHORT).show()
-        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-        val uri = Uri.fromParts("package", packageName, null)
-        intent.data = uri
-        startActivity(intent)
+    private fun showSettingsDialog(permission: String) {
+        AlertDialog.Builder(this)
+            .setTitle("$permission Required")
+            .setMessage("This permission is required for the app to function properly. Please grant it in settings.")
+            .setPositiveButton("Settings") { _, _ ->
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                val uri = Uri.fromParts("package", packageName, null)
+                intent.data = uri
+                startActivity(intent)
+            }
+            .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
+            .show()
     }
 
     private fun replaceFragment(fragment: Fragment) {
@@ -141,6 +152,47 @@ class BottomNavigationActivity : AppCompatActivity() {
         val fragmentTrasaction = fragmentManager.beginTransaction()
         fragmentTrasaction.replace(R.id.frame_layout, fragment)
         fragmentTrasaction.commit()
+    }
+
+    private fun startForeground() {
+        val serviceIntent = Intent(this, ForeGroundLocationUpdates::class.java)
+        startService(serviceIntent)
+    }
+
+    private fun stopForeground() {
+        val serviceIntent = Intent(this, ForeGroundLocationUpdates::class.java)
+        startService(serviceIntent)
+    }
+
+    private fun startBackground() {
+        val serviceIntent = Intent(this, LocationUpdates::class.java)
+        startService(serviceIntent)
+    }
+
+    private fun stopBackground() {
+        val serviceIntent = Intent(this, LocationUpdates::class.java)
+        startService(serviceIntent)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("Bottom Activity", "Location 1")
+        startForeground()
+        Log.d("Bottom Activity", "Location 2")
+        stopBackground()
+        Log.d("Bottom Activity", "Location 3")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        startBackground()
+        stopForeground()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        stopForeground()
+        stopBackground()
     }
 
 }

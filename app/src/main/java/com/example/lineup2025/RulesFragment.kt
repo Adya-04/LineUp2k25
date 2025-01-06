@@ -1,5 +1,6 @@
 package com.example.lineup2025
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -33,7 +34,8 @@ class RulesFragment : Fragment() {
         val name = tokenManager.getName()
         binding.hey.text = "Hey $name"
         binding.nextBtn.setOnClickListener {
-            findNavController().navigate(R.id.action_rulesFragment_to_mainFragment)
+            startActivity(Intent(activity as MainActivity,BottomNavigationActivity::class.java))
+            (activity as MainActivity).finish()
         }
     }
 

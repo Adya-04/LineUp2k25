@@ -77,4 +77,7 @@ dependencies {
 
     //Ripple Background
     implementation("com.skyfishjy.ripplebackground:library:1.0.1")
+
+    // Socket and Map
+    implementation ("io.socket:socket.io-client:2.1.0")
 }

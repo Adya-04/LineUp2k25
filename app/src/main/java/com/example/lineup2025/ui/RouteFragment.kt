@@ -1,4 +1,4 @@
-package com.example.lineup2025
+package com.example.lineup2025.ui
 
 import android.os.Bundle
 import android.os.Handler
@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import com.example.lineup2025.RadarView
 import com.example.lineup2025.databinding.FragmentRouteBinding
 import com.example.lineup2025.model.Location
 import com.example.lineup2025.utils.NetworkResult

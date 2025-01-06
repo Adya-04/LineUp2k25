@@ -1,4 +1,4 @@
-package com.example.lineup2025
+package com.example.lineup2025.ui
 
 import android.app.Dialog
 import android.graphics.Color
@@ -13,9 +13,9 @@ import android.view.ViewGroup
 import android.view.Window
 import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import com.example.lineup2025.R
 import com.example.lineup2025.databinding.FragmentQrScannerBinding
 import com.example.lineup2025.model.QRScannerRequest
 import com.example.lineup2025.utils.NetworkResult

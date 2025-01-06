@@ -1,5 +1,6 @@
 package com.example.lineup2025.auth.ui
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -9,6 +10,8 @@ import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import com.example.lineup2025.BottomNavigationActivity
+import com.example.lineup2025.MainActivity
 import com.example.lineup2025.R
 import com.example.lineup2025.auth.model.LoginRequestBody
 import com.example.lineup2025.auth.viewmodel.AuthViewModel
@@ -65,7 +68,11 @@ class LoginFragment : Fragment() {
                             tokenManager.saveScannedQRCodes(response.scannedCodes.toSet())
 
                             showToast("Login Successful")
-                            findNavController().navigate(R.id.action_loginFragment_to_mainFragment)
+                            startActivity(
+                                Intent(activity as MainActivity,
+                                    BottomNavigationActivity::class.java)
+                            )
+                            (activity as MainActivity).finish()
                             //fun deletepreviousstate
                         } else {
                             showToast("User Not Found!")
@@ -75,6 +82,7 @@ class LoginFragment : Fragment() {
 
                 is NetworkResult.Error -> {
                     showToast(it.message.toString())
+                    binding.loginBtn.isEnabled = true
                 }
 
                 is NetworkResult.Loading -> {

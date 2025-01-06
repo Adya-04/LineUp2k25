@@ -1,4 +1,4 @@
-package com.example.lineup2025
+package com.example.lineup2025.ui
 
 import android.graphics.Bitmap
 import android.os.Bundle

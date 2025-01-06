@@ -9,13 +9,7 @@
         android:id="@+id/loginFragment"
         android:name="com.example.lineup2025.auth.ui.LoginFragment"
         android:label="fragment_login"
-        tools:layout="@layout/fragment_login" >
-        <action
-            android:id="@+id/action_loginFragment_to_mainFragment"
-            app:destination="@id/mainFragment"
-            app:popUpTo="@id/welcomeFragment"
-            app:popUpToInclusive="true" />
-    </fragment>
+        tools:layout="@layout/fragment_login" />
     <fragment
         android:id="@+id/signupFragment"
         android:name="com.example.lineup2025.auth.ui.SignupFragment"
@@ -25,11 +19,6 @@
             android:id="@+id/action_signupFragment_to_characterSelectFragment"
             app:destination="@id/characterSelectFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/mainFragment"
-        android:name="com.example.lineup2025.MainFragment"
-        android:label="fragment_main"
-        tools:layout="@layout/fragment_main" />
     <fragment
         android:id="@+id/welcomeFragment"
         android:name="com.example.lineup2025.WelcomeFragment"
@@ -41,9 +30,6 @@
         <action
             android:id="@+id/action_welcomeFragment_to_signupFragment"
             app:destination="@id/signupFragment" />
-        <action
-            android:id="@+id/action_welcomeFragment_to_mainFragment"
-            app:destination="@id/mainFragment" />
     </fragment>
     <fragment
         android:id="@+id/characterSelectFragment"
@@ -58,11 +44,5 @@
         android:id="@+id/rulesFragment"
         android:name="com.example.lineup2025.RulesFragment"
         android:label="fragment_rules"
-        tools:layout="@layout/fragment_rules" >
-        <action
-            android:id="@+id/action_rulesFragment_to_mainFragment"
-            app:destination="@id/mainFragment"
-            app:popUpTo="@id/welcomeFragment"
-            app:popUpToInclusive="true" />
-    </fragment>
+        tools:layout="@layout/fragment_rules" />
 </navigation>

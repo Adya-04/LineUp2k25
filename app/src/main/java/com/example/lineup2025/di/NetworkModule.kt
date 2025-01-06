@@ -44,6 +44,4 @@ class NetworkModule {
             .client(okHttpClient)
             .build().create(MainAPI::class.java)
     }
-
-
 }
