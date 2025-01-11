@@ -3,6 +3,7 @@ package com.example.lineup2025.api
 import com.example.lineup2025.auth.model.AvatarRequest
 import com.example.lineup2025.auth.model.AvatarResponse
 import com.example.lineup2025.model.AccessAvatar
+import com.example.lineup2025.model.LeaderboardModel
 import com.example.lineup2025.model.QRCodeResponse
 import com.example.lineup2025.model.QRScannerRequest
 import com.example.lineup2025.model.QRScannerResponse
@@ -27,5 +28,8 @@ interface MainAPI {
 
     @GET("user/refresh-location")
     suspend fun getRoute():Response<RouteResponse>
+
+    @GET("user/leaderboard")
+    suspend fun getPlayers():Response<LeaderboardModel>
 
 }

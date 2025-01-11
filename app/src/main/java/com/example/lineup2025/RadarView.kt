@@ -144,7 +144,7 @@ class RadarView : View {
         super.onDraw(canvas)
         // Draw radar circle
         val centerX = width / 2
-        val centerY = height / 2f
+        val centerY = height / 2
         // Calculate maxDistanceInKm dynamically based on the actual distance values of users
         val maxDistanceInKm = users.maxByOrNull { it.distance }?.distance
             ?: 1.0 // Default to 100 km if no users are present

@@ -80,4 +80,7 @@ dependencies {
 
     // Socket and Map
     implementation ("io.socket:socket.io-client:2.1.0")
+
+    //Swipe down to refresh
+    implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 }

@@ -22,4 +22,5 @@
     <string name="rule_4">Keep you location turned on :)</string>
     <string name="rule_5">Map refreshes automatically every 5 seconds, manual refresh can be done via button click.</string>
     <string name="my_qr_code">My QR Code\n</string>
+    <string name="leaderboard">Leaderboard</string>
 </resources>

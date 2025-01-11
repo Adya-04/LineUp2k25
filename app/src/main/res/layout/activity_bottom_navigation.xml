@@ -8,6 +8,16 @@
     android:layout_height="match_parent"
     tools:context=".BottomNavigationActivity">
 
+    <TextView
+        android:id="@+id/direction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:gravity="center"/>
+
     <FrameLayout
         android:id="@+id/frame_layout"
         android:layout_width="match_parent"

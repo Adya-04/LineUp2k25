@@ -80,6 +80,7 @@ class RouteFragment : Fragment() {
                 is NetworkResult.Loading -> {
 //                    showLoading()
                 }
+                else -> {}
             }
         })
     }
