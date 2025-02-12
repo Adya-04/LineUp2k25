@@ -21,7 +21,7 @@
         android:layout_weight="1"
         android:layout_gravity="center_vertical"
         android:fontFamily="@font/montserrat_medium"
-        android:textSize="25sp"
+        android:textSize="18sp"
         android:singleLine="true"
         android:maxLines="1"
         android:textColor="@color/black" />

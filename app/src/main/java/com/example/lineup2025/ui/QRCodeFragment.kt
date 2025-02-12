@@ -52,10 +52,18 @@ class QRCodeFragment : Fragment() {
                     bodyResponse?.let { response ->
                         generateQRCode(response.code)
                     }
+                    binding.tryAgain.visibility = View.GONE
                 }
 
                 is NetworkResult.Error -> {
                     showToast(it.message.toString())
+                    binding.tryAgain.visibility = View.VISIBLE
+                    binding.tryAgain.isEnabled = true
+                    binding.tryAgain.setOnClickListener {
+                        qrcodeViewModel.getQRCode()
+                        binding.tryAgain.visibility = View.GONE
+                        binding.tryAgain.isEnabled = false
+                    }
                 }
 
                 is NetworkResult.Loading -> {
