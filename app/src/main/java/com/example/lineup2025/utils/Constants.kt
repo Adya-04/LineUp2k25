@@ -1,7 +1,7 @@
 package com.example.lineup2025.utils
 
 object Constants {
-    const val BASE_URL = "https://lineup-backend.onrender.com/"
+    const val BASE_URL = "https://lineup-backend-98hc.onrender.com"
     const val SOCKET_URL = "https://lineup-backend.onrender.com"
     const val PREFS_TOKEN_FILE = "LineUpTokens"
     const val USER_TOKEN = "USER_TOKEN"

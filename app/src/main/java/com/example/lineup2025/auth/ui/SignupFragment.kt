@@ -12,7 +12,9 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.example.lineup2025.R
 import com.example.lineup2025.auth.model.SignUpRequestBody
+import com.example.lineup2025.auth.model.generateOtpRequest
 import com.example.lineup2025.auth.viewmodel.AuthViewModel
+import com.example.lineup2025.auth.viewmodel.OtpViewModel
 import com.example.lineup2025.databinding.FragmentSignupBinding
 import com.example.lineup2025.utils.NetworkResult
 import com.example.lineup2025.utils.TokenManager
@@ -29,12 +31,13 @@ class SignupFragment : Fragment() {
     lateinit var tokenManager: TokenManager
 
     private val authViewModel by viewModels<AuthViewModel>()
+    private val otpViewModel by viewModels<OtpViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentSignupBinding.inflate(inflater,container,false)
+        _binding = FragmentSignupBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -42,13 +45,11 @@ class SignupFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.regtbtn.setOnClickListener {
-
             binding.regtbtn.isEnabled = false
             val validateResult = validateUserInput()
-            if(validateResult.first){
+            if (validateResult.first) {
                 authViewModel.signUpUser(getSignupRequestBody())
-            }
-            else{
+            } else {
                 showError(validateResult.second)
             }
         }
@@ -69,7 +70,8 @@ class SignupFragment : Fragment() {
 
                             Log.d("SignupFragment", "Signup successful. Token: ${response.token}")
                             showToast("Registered Successfully")
-                        findNavController().navigate(R.id.action_signupFragment_to_characterSelectFragment)
+                            val emailtxt = binding.email.text.toString()
+                            generateOtp(emailtxt)
 
                         } else {
                             showToast("Zeal Id is already registered")
@@ -79,6 +81,7 @@ class SignupFragment : Fragment() {
 
                 is NetworkResult.Error -> {
                     showToast(it.message.toString())
+                    binding.regtbtn.isEnabled = true
                 }
 
                 is NetworkResult.Loading -> {
@@ -90,17 +93,54 @@ class SignupFragment : Fragment() {
         })
     }
 
-    private fun getSignupRequestBody(): SignUpRequestBody{
+    private fun generateOtp(email: String) {
+        otpViewModel.generateOtp(generateOtpRequest(email))
+
+        otpViewModel.generateOtpResponseLiveData.observe(viewLifecycleOwner, Observer {
+            hideLoading()
+            when (it) {
+                is NetworkResult.Success -> {
+                    val bodyResponse = it.data
+                    bodyResponse?.let { response ->
+                        if (response.message == "OTP sent successfully") {
+                            showToast("OTP sent successfully")
+                            val action =
+                                SignupFragmentDirections.actionSignupFragmentToOtpFragment(email)
+                            findNavController().navigate(action)
+                        } else {
+                            showToast("Issue in Otp generation")
+                        }
+                    }
+                }
+
+                is NetworkResult.Error -> {
+                    showToast(it.message.toString())
+                    binding.regtbtn.isEnabled = true
+                }
+
+                is NetworkResult.Loading -> {
+                    showLoading()
+                }
+            }
+        })
+    }
+
+    private fun getSignupRequestBody(): SignUpRequestBody {
         val fullnametxt = binding.name.text.trim().toString()
         val emailtxt = binding.email.text.toString()
         val zealidtxt = binding.zeal.text.trim().toString()
         val passwordtxt = binding.password.text.trim().toString()
-        return SignUpRequestBody(emailtxt,passwordtxt,fullnametxt,zealidtxt)
+        return SignUpRequestBody(emailtxt, passwordtxt, fullnametxt, zealidtxt)
     }
 
-    private fun validateUserInput(): Pair<Boolean,String>{
+    private fun validateUserInput(): Pair<Boolean, String> {
         val signUpRequestBody = getSignupRequestBody()
-        return authViewModel.validateSignupCredentials(signUpRequestBody.name,signUpRequestBody.email,signUpRequestBody.zealId,signUpRequestBody.password)
+        return authViewModel.validateSignupCredentials(
+            signUpRequestBody.name,
+            signUpRequestBody.email,
+            signUpRequestBody.zealId,
+            signUpRequestBody.password
+        )
     }
 
     private fun showError(message: String) {
