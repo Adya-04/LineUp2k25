@@ -30,6 +30,10 @@ class AvatarSelectFragment : Fragment() {
     private var _binding: FragmentAvatarSelectBinding? = null
     private val binding get() = _binding!!
 
+
+    private val autoScrollHandler = android.os.Handler()
+    private lateinit var autoScrollRunnable: Runnable
+
     private var currentVisiblePosition = 0
     private var visibleImage : Int = 0
 
@@ -107,7 +111,32 @@ class AvatarSelectFragment : Fragment() {
                 visibleImage = getVisibleMappedImage()
 
             }
+
+            override fun onPageScrollStateChanged(state: Int) {
+                if(state == ViewPager2.SCROLL_STATE_DRAGGING){
+                    stopAutoScroll()
+                }
+            }
         })
+        startAutoScroll()
+    }
+
+    private fun startAutoScroll() {
+        autoScrollRunnable = object : Runnable {
+            override fun run() {
+                if (binding.VP.currentItem < binding.VP.adapter?.itemCount?.minus(1) ?: 0) {
+                    binding.VP.currentItem += 1
+                } else {
+                    binding.VP.currentItem = 0 // Restart from first item
+                }
+                autoScrollHandler.postDelayed(this, 1000) // Change item every 2 seconds
+            }
+        }
+        autoScrollHandler.postDelayed(autoScrollRunnable, 2000)
+    }
+
+    private fun stopAutoScroll() {
+        autoScrollHandler.removeCallbacks(autoScrollRunnable)
     }
 
     private fun getVisibleMappedImage(): Int {
@@ -158,6 +187,7 @@ class AvatarSelectFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        stopAutoScroll()
         _binding = null
     }
 }

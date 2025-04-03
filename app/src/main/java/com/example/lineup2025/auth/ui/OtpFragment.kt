@@ -38,9 +38,11 @@ class OtpFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         addTextChangeListener()
-        setupObservers()
 
         val email = arguments?.getString("email")?: ""
+
+        setupObservers(email)
+
         binding.confirmBtn.setOnClickListener {
             binding.confirmBtn.isEnabled = false
             val typedOtp =
@@ -58,15 +60,18 @@ class OtpFragment : Fragment() {
         }
     }
 
-private fun setupObservers(){
+private fun setupObservers(email: String){
     otpViewModel.verifyOtpResponseLivedata.observe(viewLifecycleOwner, Observer {
+        hideLoading()
         when(it){
             is NetworkResult.Success ->{
                 val bodyResponse = it.data
                 bodyResponse?.let {response->
                     if(response.message == "OTP verified successfully"){
                         showToast("OTP verified successfully")
-                        findNavController().navigate(R.id.action_otpFragment_to_characterSelectFragment)
+
+                        val action = OtpFragmentDirections.actionOtpFragmentToSignupFragment(email)
+                        findNavController().navigate(action)
                     }else{
                         showToast("Incorrect OTP")
                         binding.confirmBtn.isEnabled = true
@@ -78,11 +83,35 @@ private fun setupObservers(){
                 binding.confirmBtn.isEnabled = true
             }
             is NetworkResult.Loading -> {
-                //load
+                showLoading()
             }
         }
     })
 }
+
+    private fun hideLoading() {
+        binding.mainLayout.alpha = 1.0f
+        binding.progressBar.visibility = View.GONE // Show progress bar
+        binding.otpEditText1.isEnabled = true
+        binding.otpEditText2.isEnabled = true
+        binding.otpEditText3.isEnabled = true
+        binding.otpEditText4.isEnabled = true
+        binding.otpEditText5.isEnabled = true
+        binding.otpEditText6.isEnabled = true
+        binding.confirmBtn.isEnabled = true
+    }
+
+    private fun showLoading() {
+        binding.mainLayout.alpha = 0.5f
+        binding.progressBar.visibility = View.VISIBLE // Show progress bar
+        binding.otpEditText1.isEnabled = false
+        binding.otpEditText2.isEnabled = false
+        binding.otpEditText3.isEnabled = false
+        binding.otpEditText4.isEnabled = false
+        binding.otpEditText5.isEnabled = false
+        binding.otpEditText6.isEnabled = false
+        binding.confirmBtn.isEnabled = false
+    }
 
     private fun showToast(message: String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()

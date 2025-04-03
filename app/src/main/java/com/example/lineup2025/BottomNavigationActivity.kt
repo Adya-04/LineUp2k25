@@ -12,6 +12,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.view.View
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
@@ -206,7 +207,7 @@ class BottomNavigationActivity : AppCompatActivity() {
 
     private fun stopForeground() {
         val serviceIntent = Intent(this, ForeGroundLocationUpdates::class.java)
-        startService(serviceIntent)
+        stopService(serviceIntent)
     }
 
     private fun startBackground() {
@@ -216,7 +217,7 @@ class BottomNavigationActivity : AppCompatActivity() {
 
     private fun stopBackground() {
         val serviceIntent = Intent(this, LocationUpdates::class.java)
-        startService(serviceIntent)
+        stopService(serviceIntent)
     }
     private fun updateDirectionUI(direction: String) {
         binding.direction.text = direction

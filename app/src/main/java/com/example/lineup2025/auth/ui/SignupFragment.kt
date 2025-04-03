@@ -12,9 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.example.lineup2025.R
 import com.example.lineup2025.auth.model.SignUpRequestBody
-import com.example.lineup2025.auth.model.generateOtpRequest
 import com.example.lineup2025.auth.viewmodel.AuthViewModel
-import com.example.lineup2025.auth.viewmodel.OtpViewModel
 import com.example.lineup2025.databinding.FragmentSignupBinding
 import com.example.lineup2025.utils.NetworkResult
 import com.example.lineup2025.utils.TokenManager
@@ -31,7 +29,6 @@ class SignupFragment : Fragment() {
     lateinit var tokenManager: TokenManager
 
     private val authViewModel by viewModels<AuthViewModel>()
-    private val otpViewModel by viewModels<OtpViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -70,9 +67,7 @@ class SignupFragment : Fragment() {
 
                             Log.d("SignupFragment", "Signup successful. Token: ${response.token}")
                             showToast("Registered Successfully")
-                            val emailtxt = binding.email.text.toString()
-                            generateOtp(emailtxt)
-
+                            findNavController().navigate(R.id.action_signupFragment_to_characterSelectFragment)
                         } else {
                             showToast("Zeal Id is already registered")
                         }
@@ -93,41 +88,9 @@ class SignupFragment : Fragment() {
         })
     }
 
-    private fun generateOtp(email: String) {
-        otpViewModel.generateOtp(generateOtpRequest(email))
-
-        otpViewModel.generateOtpResponseLiveData.observe(viewLifecycleOwner, Observer {
-            hideLoading()
-            when (it) {
-                is NetworkResult.Success -> {
-                    val bodyResponse = it.data
-                    bodyResponse?.let { response ->
-                        if (response.message == "OTP sent successfully") {
-                            showToast("OTP sent successfully")
-                            val action =
-                                SignupFragmentDirections.actionSignupFragmentToOtpFragment(email)
-                            findNavController().navigate(action)
-                        } else {
-                            showToast("Issue in Otp generation")
-                        }
-                    }
-                }
-
-                is NetworkResult.Error -> {
-                    showToast(it.message.toString())
-                    binding.regtbtn.isEnabled = true
-                }
-
-                is NetworkResult.Loading -> {
-                    showLoading()
-                }
-            }
-        })
-    }
-
     private fun getSignupRequestBody(): SignUpRequestBody {
         val fullnametxt = binding.name.text.trim().toString()
-        val emailtxt = binding.email.text.toString()
+        val emailtxt = arguments?.getString("email") ?: "" // Use retrieved email
         val zealidtxt = binding.zeal.text.trim().toString()
         val passwordtxt = binding.password.text.trim().toString()
         return SignUpRequestBody(emailtxt, passwordtxt, fullnametxt, zealidtxt)
@@ -135,11 +98,14 @@ class SignupFragment : Fragment() {
 
     private fun validateUserInput(): Pair<Boolean, String> {
         val signUpRequestBody = getSignupRequestBody()
+        val confirmPassword = binding.confirmPassword.text.trim().toString()
+
         return authViewModel.validateSignupCredentials(
             signUpRequestBody.name,
             signUpRequestBody.email,
             signUpRequestBody.zealId,
-            signUpRequestBody.password
+            signUpRequestBody.password,
+            confirmPassword
         )
     }
 
@@ -155,7 +121,7 @@ class SignupFragment : Fragment() {
 
         // Disable text fields
         binding.name.isEnabled = false
-        binding.email.isEnabled = false
+        binding.confirmPassword.isEnabled = false
         binding.zeal.isEnabled = false
         binding.password.isEnabled = false
     }
@@ -167,7 +133,7 @@ class SignupFragment : Fragment() {
 
         // Re-enable text fields
         binding.name.isEnabled = true
-        binding.email.isEnabled = true
+        binding.confirmPassword.isEnabled = true
         binding.zeal.isEnabled = true
         binding.password.isEnabled = true
     }

@@ -48,5 +48,9 @@ class MessagingService: FirebaseMessagingService() {
         }
         notificationManager.notify(0,builder.build())
     }
+    override fun onNewToken(token: String) {
+        super.onNewToken(token)
+        Log.d("FCM Token", "New token: $token")
+    }
 
 }

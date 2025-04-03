@@ -36,7 +36,7 @@ class AuthViewModel @Inject constructor(private val repository: AuthRepository) 
         }
     }
 
-    fun validateSignupCredentials(name: String, email: String, zealid: String, password: String): Pair<Boolean,String> {
+    fun validateSignupCredentials(name: String, email: String, zealid: String, password: String,confirmPassword: String): Pair<Boolean,String> {
         var result = Pair(true,"")
         if(TextUtils.isEmpty(name) || TextUtils.isEmpty(email) || TextUtils.isEmpty(zealid) || TextUtils.isEmpty(password)){
             result = Pair(false,"Please fill all the fields")
@@ -46,6 +46,9 @@ class AuthViewModel @Inject constructor(private val repository: AuthRepository) 
         }
         else if(zealid.length < 6){
             result = Pair(false,"Zeal Id must have 6 characters")
+        }
+        else if(password != confirmPassword){
+            result = Pair(false, "Passwords do not match")
         }
         return result
     }

@@ -45,7 +45,7 @@ class WelcomeFragment : Fragment() {
         }
 
         binding.signUpBtn.setOnClickListener {
-            findNavController().navigate(R.id.action_welcomeFragment_to_signupFragment)
+            findNavController().navigate(R.id.action_welcomeFragment_to_emailFragment)
         }
 
         return binding.root

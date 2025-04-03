@@ -16,8 +16,12 @@
         android:label="fragment_signup"
         tools:layout="@layout/fragment_signup" >
         <action
-            android:id="@+id/action_signupFragment_to_otpFragment"
-            app:destination="@id/otpFragment" />
+            android:id="@+id/action_signupFragment_to_characterSelectFragment"
+            app:destination="@id/characterSelectFragment" />
+        <argument
+            android:name="email"
+            app:argType="string"
+            app:nullable="false"/>
     </fragment>
     <fragment
         android:id="@+id/welcomeFragment"
@@ -28,8 +32,8 @@
             android:id="@+id/action_welcomeFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
         <action
-            android:id="@+id/action_welcomeFragment_to_signupFragment"
-            app:destination="@id/signupFragment" />
+            android:id="@+id/action_welcomeFragment_to_emailFragment"
+            app:destination="@id/emailFragment" />
     </fragment>
     <fragment
         android:id="@+id/characterSelectFragment"
@@ -50,12 +54,21 @@
         android:name="com.example.lineup2025.auth.ui.OtpFragment"
         android:label="fragment_otp"
         tools:layout="@layout/fragment_otp" >
-        <action
-            android:id="@+id/action_otpFragment_to_characterSelectFragment"
-            app:destination="@id/characterSelectFragment" />
         <argument
             android:name="email"
             app:argType="string"
             app:nullable="false"/>
+        <action
+            android:id="@+id/action_otpFragment_to_signupFragment"
+            app:destination="@id/signupFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/emailFragment"
+        android:name="com.example.lineup2025.auth.ui.EmailFragment"
+        android:label="fragment_email"
+        tools:layout="@layout/fragment_email" >
+        <action
+            android:id="@+id/action_emailFragment_to_otpFragment"
+            app:destination="@id/otpFragment" />
     </fragment>
 </navigation>
